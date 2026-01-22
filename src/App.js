@@ -17,6 +17,11 @@ function App() {
   const [selectedSort, setSelectedSort] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
 
+  const sortPosts = (sort) => {
+    setSelectedSort(sort);
+    console.log(sort);
+  };
+
   // useMemo - мемоизация, запись в кэш способа сортировки и массива,
   // если они неизменны, не будет отрабатывать по новой, а
   // возьмет запомненные данные из кэша
@@ -32,17 +37,18 @@ function App() {
     return posts;
   }, [selectedSort, posts]);
 
+  const sortedAndSearchedPosts = useMemo(() => {
+    return sortedPosts.filter((post) =>
+      post.title.toLowerCase().includes(searchQuery),
+    );
+  }, [searchQuery, sortedPosts]);
+
   const createPost = (newPost) => {
     setPosts([...posts, newPost]);
   };
 
   const removePost = (post) => {
     setPosts(posts.filter((p) => p.id !== post.id));
-  };
-
-  const sortPosts = (sort) => {
-    setSelectedSort(sort);
-    console.log(sort);
   };
 
   return (
@@ -76,10 +82,10 @@ function App() {
         />
       </div>
 
-      {posts.length !== 0 ? (
+      {sortedAndSearchedPosts.length !== 0 ? (
         <PostList
           remove={removePost}
-          posts={sortedPosts}
+          posts={sortedAndSearchedPosts}
           title={"Список постов 1"}
         />
       ) : (
@@ -91,4 +97,4 @@ function App() {
 
 export default App;
 
-// 01.05.00
+//
