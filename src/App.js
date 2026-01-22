@@ -6,6 +6,7 @@ import PostList from "./components/PostList";
 import PostForm from "./components/PostForm";
 import MySelect from "./components/UI/select/MySelect";
 import MyInput from "./components/UI/input/MyInput";
+import PostFilter from "./components/PostFilter";
 
 function App() {
   const [posts, setPosts] = useState([
@@ -14,13 +15,15 @@ function App() {
     { id: 3, title: "C++", body: "Description" },
   ]);
 
-  const [selectedSort, setSelectedSort] = useState("");
-  const [searchQuery, setSearchQuery] = useState("");
+  // const [selectedSort, setSelectedSort] = useState("");
+  // const [searchQuery, setSearchQuery] = useState("");
 
-  const sortPosts = (sort) => {
-    setSelectedSort(sort);
-    console.log(sort);
-  };
+  const [filter, setFilter] = useState({ sort: "", query: "" });
+
+  // const sortPosts = (sort) => {
+  //   setSelectedSort(sort);
+  //   console.log(sort);
+  // };
 
   // useMemo - мемоизация, запись в кэш способа сортировки и массива,
   // если они неизменны, не будет отрабатывать по новой, а
@@ -29,19 +32,19 @@ function App() {
   // или массив постов
   const sortedPosts = useMemo(() => {
     console.log(" GET SORTED POSTS ");
-    if (selectedSort) {
+    if (filter.sort) {
       return [
-        ...posts.sort((a, b) => a[selectedSort].localeCompare(b[selectedSort])),
+        ...posts.sort((a, b) => a[filter.sort].localeCompare(b[filter.sort])),
       ];
     }
     return posts;
-  }, [selectedSort, posts]);
+  }, [filter.sort, posts]);
 
   const sortedAndSearchedPosts = useMemo(() => {
     return sortedPosts.filter((post) =>
-      post.title.toLowerCase().includes(searchQuery),
+      post.title.toLowerCase().includes(filter.query),
     );
-  }, [searchQuery, sortedPosts]);
+  }, [filter.query, sortedPosts]);
 
   const createPost = (newPost) => {
     setPosts([...posts, newPost]);
@@ -65,22 +68,8 @@ function App() {
 
       <PostForm create={createPost} />
       <hr style={{ margin: "15px 0" }} />
-      <div>
-        <MyInput
-          placeholder="Поиск..."
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-        />
-        <MySelect
-          value={selectedSort}
-          onChange={sortPosts}
-          defaultValue={"Сортировка"}
-          options={[
-            { value: "title", name: "По названию" },
-            { value: "body", name: "По описанию" },
-          ]}
-        />
-      </div>
+
+      <PostFilter filter={filter} setFilter={setFilter} />
 
       {sortedAndSearchedPosts.length !== 0 ? (
         <PostList
