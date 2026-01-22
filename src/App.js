@@ -1,12 +1,10 @@
 import { useMemo, useState } from "react";
-import Counter from "./components/Counter";
-import ClassCounter from "./components/ClassCounter";
 import "./styles/App.css";
 import PostList from "./components/PostList";
 import PostForm from "./components/PostForm";
-import MySelect from "./components/UI/select/MySelect";
-import MyInput from "./components/UI/input/MyInput";
 import PostFilter from "./components/PostFilter";
+import MyModal from "./components/UI/MyModal/MyModal";
+import MyButton from "./components/UI/button/MyButton";
 
 function App() {
   const [posts, setPosts] = useState([
@@ -19,6 +17,8 @@ function App() {
   // const [searchQuery, setSearchQuery] = useState("");
 
   const [filter, setFilter] = useState({ sort: "", query: "" });
+
+  const [modal, setModal] = useState(false);
 
   // const sortPosts = (sort) => {
   //   setSelectedSort(sort);
@@ -48,6 +48,7 @@ function App() {
 
   const createPost = (newPost) => {
     setPosts([...posts, newPost]);
+    setModal(false);
   };
 
   const removePost = (post) => {
@@ -56,30 +57,20 @@ function App() {
 
   return (
     <div className="App">
-      {/* <h1>{value}</h1>
-      <input
-        onChange={(event) => setValue(event.target.value)}
-        type="text"
-        value={value}
-      /> */}
+      <MyButton style={{ marginTop: "30px" }} onClick={() => setModal(true)}>
+        Создать пост
+      </MyButton>
+      <MyModal visible={modal} setVisible={setModal}>
+        <PostForm create={createPost} />
+      </MyModal>
 
-      {/* <Counter />
-      <ClassCounter /> */}
-
-      <PostForm create={createPost} />
       <hr style={{ margin: "15px 0" }} />
-
       <PostFilter filter={filter} setFilter={setFilter} />
-
-      {sortedAndSearchedPosts.length !== 0 ? (
-        <PostList
-          remove={removePost}
-          posts={sortedAndSearchedPosts}
-          title={"Список постов 1"}
-        />
-      ) : (
-        <h1 style={{ textAlign: "center" }}>Посты не найдены</h1>
-      )}
+      <PostList
+        remove={removePost}
+        posts={sortedAndSearchedPosts}
+        title={"Список постов 1"}
+      />
     </div>
   );
 }
